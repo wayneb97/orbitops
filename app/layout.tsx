@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "OrbitOps",
-  description: "AI Booking & CRM Suite",
+  title: 'OrbitOps',
+  description: 'AI-powered booking + CRM platform',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
