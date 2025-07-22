@@ -9,65 +9,64 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
-      profiles: {
-        Row: {
-          id: string;
-          created_at: string | null;
-          email: string | null;
-          role: string | null;
-        };
-        Insert: {
-          id: string;
-          created_at?: string | null;
-          email?: string | null;
-          role?: string | null;
-        };
-        Update: {
-          id?: string;
-          created_at?: string | null;
-          email?: string | null;
-          role?: string | null;
-        };
-        Relationships: [];
-      };
-      time_logs: {
+      clock_entries: {
         Row: {
           id: number;
-          user_id: string;
-          clock_in: string | null;
+          staff_id: number;
+          clock_in: string;
           clock_out: string | null;
-          break_minutes: number | null;
+          break_minutes: number;
           created_at: string;
         };
         Insert: {
-          id?: number;
-          user_id: string;
-          clock_in?: string | null;
+          staff_id: number;
+          clock_in: string;
           clock_out?: string | null;
-          break_minutes?: number | null;
-          created_at?: string;
+          break_minutes?: number;
         };
         Update: {
-          id?: number;
-          user_id?: string;
-          clock_in?: string | null;
           clock_out?: string | null;
-          break_minutes?: number | null;
-          created_at?: string;
+          break_minutes?: number;
         };
-        Relationships: [
-          {
-            foreignKeyName: "time_logs_user_id_fkey";
-            columns: ["user_id"];
-            referencedRelation: "profiles";
-            referencedColumns: ["id"];
-          }
-        ];
+      };
+      staff: {
+        Row: {
+          id: number;
+          name: string;
+          pin: string;
+          is_admin: boolean;
+          hourly_rate: number;
+          created_at: string;
+        };
+        Insert: {
+          name: string;
+          pin: string;
+          is_admin?: boolean;
+          hourly_rate: number;
+        };
+        Update: {
+          name?: string;
+          pin?: string;
+          is_admin?: boolean;
+          hourly_rate?: number;
+        };
+      };
+      takings: {
+        Row: {
+          id: number;
+          amount: number;
+          date: string;
+          created_at: string;
+        };
+        Insert: {
+          amount: number;
+          date: string;
+        };
+        Update: {
+          amount?: number;
+          date?: string;
+        };
       };
     };
-    Views: {};
-    Functions: {};
-    Enums: {};
-    CompositeTypes: {};
   };
 }
