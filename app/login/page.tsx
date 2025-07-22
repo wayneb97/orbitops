@@ -1,72 +1,55 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 
 export default function LoginPage() {
   const supabase = createClient();
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        router.push("/dashboard");
-      }
-    };
-    checkSession();
-  }, []);
+  const [pin, setPin] = useState("");
+  const [message, setMessage] = useState("");
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      setError(error.message);
-    } else {
-      router.push("/dashboard");
+  const handleClockInOut = async () => {
+    if (!pin) {
+      setMessage("Please enter your PIN.");
+      return;
     }
-    setLoading(false);
+
+    const { data, error } = await supabase.rpc("clock_in_out", {
+      user_pin: pin,
+    });
+
+    if (error) {
+      setMessage("Error: " + error.message);
+    } else {
+      setMessage(data.message || "Success!");
+    }
+
+    setPin("");
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center p-4">
-      <form
-        onSubmit={handleLogin}
-        className="w-full max-w-sm bg-white rounded shadow-md p-6 space-y-4"
+    <main className="flex min-h-screen flex-col items-center justify-center p-8">
+      <h1 className="text-3xl font-bold mb-4">Clock In / Out</h1>
+
+      <input
+        type="password"
+        placeholder="Enter PIN"
+        value={pin}
+        onChange={(e) => setPin(e.target.value)}
+        className="border border-gray-300 rounded px-4 py-2 mb-4 w-64 text-center text-lg"
+      />
+
+      <button
+        onClick={handleClockInOut}
+        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded text-lg"
       >
-        <h2 className="text-2xl font-bold">Login to OrbitOps</h2>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full border rounded px-3 py-2"
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full border rounded px-3 py-2"
-          required
-        />
-        {error && <p className="text-red-600 text-sm">{error}</p>}
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded"
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
-      </form>
+        Submit
+      </button>
+
+      {message && (
+        <div className="mt-4 text-center text-md text-gray-700">{message}</div>
+      )}
     </main>
   );
 }
